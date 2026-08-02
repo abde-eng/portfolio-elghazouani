@@ -131,6 +131,24 @@ function initHeroScene(canvas) {
   }
   world.add(ringGroup)
 
+  // ---------- Energy pulses travelling along the grid rings ----------
+  const pulses = []
+  const pulseGeometry = new THREE.SphereGeometry(0.07, 12, 12)
+  for (let i = 0; i < 6; i++) {
+    const pulseMaterial = new THREE.MeshBasicMaterial({
+      color: i % 2 === 0 ? COLOR_ACCENT : COLOR_SECONDARY,
+      transparent: true,
+      opacity: 0.9,
+    })
+    const pulse = new THREE.Mesh(pulseGeometry, pulseMaterial)
+    pulse.userData.radius = 3.6
+    pulse.userData.speed = 0.5 + Math.random() * 0.5
+    pulse.userData.offset = (i / 6) * Math.PI * 2
+    pulse.userData.ringTilt = i < 3 ? 0.3 : -0.3
+    world.add(pulse)
+    pulses.push(pulse)
+  }
+
   // ---------- Floating particle field ----------
   const particleCount = 700
   const positions = new Float32Array(particleCount * 3)
@@ -211,6 +229,20 @@ function initHeroScene(canvas) {
 
     // Slow ring drift
     ringGroup.rotation.z = elapsed * 0.05 * speedFactor
+
+    // Energy pulses circulating along the grid rings
+    pulses.forEach((pulse) => {
+      const a = elapsed * pulse.userData.speed * speedFactor + pulse.userData.offset
+      const r = pulse.userData.radius
+      pulse.position.set(
+        Math.cos(a) * r,
+        Math.sin(a) * r * pulse.userData.ringTilt,
+        Math.sin(a) * r,
+      )
+      const twinkle = 0.6 + Math.abs(Math.sin(a * 2)) * 0.4
+      pulse.material.opacity = twinkle
+      pulse.scale.setScalar(0.8 + twinkle * 0.5)
+    })
 
     // Particle drift
     particles.rotation.y = elapsed * 0.02 * speedFactor

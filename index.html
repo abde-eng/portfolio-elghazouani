@@ -95,6 +95,76 @@
 
   <main>
 
+    <!-- ========== THERMAL SIMULATION SHOWCASE ========== -->
+    <section id="simulation" class="section sim-section">
+      <div class="section-header reveal">
+        <h2>Simulation thermique en temps réel</h2>
+        <p class="section-subtitle">
+          Résolution en direct de l'équation de la chaleur de Fourier
+          <span class="sim-equation">∂T/∂t = α · ∇²T</span>
+          sur GPU — pilotez la diffusion comme dans un logiciel de simulation.
+        </p>
+      </div>
+
+      <div class="sim-wrapper reveal">
+        <div class="sim-stage">
+          <canvas id="sim-canvas"></canvas>
+          <div class="sim-hint"><i class="fas fa-hand-pointer"></i> Cliquez / glissez sur la surface pour injecter de la chaleur</div>
+          <div class="sim-readout" id="sim-readout">
+            <div><span>Matériau</span><strong id="ro-material">Cuivre</strong></div>
+            <div><span>Diffusivité α</span><strong id="ro-alpha">111 mm²/s</strong></div>
+            <div><span>T max</span><strong id="ro-temp">0 %</strong></div>
+          </div>
+          <!-- Thermal color legend -->
+          <div class="sim-legend" aria-hidden="true">
+            <span>Froid</span>
+            <div class="sim-legend-bar"></div>
+            <span>Chaud</span>
+          </div>
+        </div>
+
+        <div class="sim-controls">
+          <div class="sim-control-group">
+            <label class="sim-control-label">Matériau conducteur</label>
+            <div class="sim-materials" id="sim-materials">
+              <button class="sim-mat is-active" data-alpha="0.24" data-cool="0.0008" data-label="Cuivre" data-real="111 mm²/s">Cuivre</button>
+              <button class="sim-mat" data-alpha="0.19" data-cool="0.001" data-label="Aluminium" data-real="84 mm²/s">Aluminium</button>
+              <button class="sim-mat" data-alpha="0.06" data-cool="0.0018" data-label="Acier" data-real="4 mm²/s">Acier</button>
+              <button class="sim-mat" data-alpha="0.02" data-cool="0.003" data-label="Béton" data-real="0.5 mm²/s">Béton</button>
+            </div>
+          </div>
+
+          <div class="sim-control-group">
+            <label class="sim-control-label" for="ctrl-power">Puissance de la source
+              <span class="sim-val" id="val-power">Élevée</span>
+            </label>
+            <input type="range" id="ctrl-power" min="0.15" max="1" step="0.05" value="0.7" />
+          </div>
+
+          <div class="sim-control-group">
+            <label class="sim-control-label" for="ctrl-alpha">Diffusivité thermique
+              <span class="sim-val" id="val-alpha">0.24</span>
+            </label>
+            <input type="range" id="ctrl-alpha" min="0.01" max="0.24" step="0.01" value="0.24" />
+          </div>
+
+          <div class="sim-control-group">
+            <label class="sim-control-label" for="ctrl-cool">Refroidissement ambiant
+              <span class="sim-val" id="val-cool">Faible</span>
+            </label>
+            <input type="range" id="ctrl-cool" min="0" max="0.006" step="0.0002" value="0.0008" />
+          </div>
+
+          <div class="sim-buttons">
+            <button id="sim-toggle" class="cta cta-primary sim-btn"><i class="fas fa-pause"></i> Pause</button>
+            <button id="sim-reset" class="cta cta-outline sim-btn"><i class="fas fa-rotate-left"></i> Réinitialiser</button>
+          </div>
+
+          <p class="sim-note">Chaque image résout la diffusion de la chaleur par la méthode des différences finies (Laplacien discret) directement sur le processeur graphique.</p>
+        </div>
+      </div>
+    </section>
+
     <!-- ========== ABOUT ========== -->
     <section id="cv" class="section">
       <div class="section-header reveal">
@@ -441,5 +511,6 @@
   }
   </script>
   <script type="module" src="hero-3d.js"></script>
+  <script type="module" src="heat-sim.js"></script>
 </body>
 </html>
