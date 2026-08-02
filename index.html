@@ -95,72 +95,88 @@
 
   <main>
 
-    <!-- ========== THERMAL SIMULATION SHOWCASE ========== -->
+    <!-- ========== ENERGY SYSTEMS SHOWCASE (CSP / CVC) ========== -->
     <section id="simulation" class="section sim-section">
       <div class="section-header reveal">
-        <h2>Simulation thermique en temps réel</h2>
-        <p class="section-subtitle">
-          Résolution en direct de l'équation de la chaleur de Fourier
-          <span class="sim-equation">∂T/∂t = α · ∇²T</span>
-          sur GPU — pilotez la diffusion comme dans un logiciel de simulation.
+        <h2>Systèmes énergétiques en 3D</h2>
+        <p class="section-subtitle" id="sim-subtitle">
+          Explorez deux systèmes de mon domaine, modélisés et animés en temps réel — pilotez-les comme un ingénieur.
         </p>
+      </div>
+
+      <!-- View switcher -->
+      <div class="sim-switch reveal" role="tablist" aria-label="Choix du système">
+        <button class="sim-switch-btn is-active" id="view-csp" role="tab" aria-selected="true">
+          <i class="fas fa-solar-panel"></i> Centrale solaire à concentration (CSP)
+        </button>
+        <button class="sim-switch-btn" id="view-cvc" role="tab" aria-selected="false">
+          <i class="fas fa-wind"></i> Système CVC (bâtiment)
+        </button>
       </div>
 
       <div class="sim-wrapper reveal">
         <div class="sim-stage">
           <canvas id="sim-canvas"></canvas>
-          <div class="sim-hint"><i class="fas fa-hand-pointer"></i> Cliquez / glissez sur la surface pour injecter de la chaleur</div>
+          <div class="sim-hint"><i class="fas fa-arrows-up-down-left-right"></i> Glissez pour faire pivoter la scène</div>
           <div class="sim-readout" id="sim-readout">
-            <div><span>Matériau</span><strong id="ro-material">Cuivre</strong></div>
-            <div><span>Diffusivité α</span><strong id="ro-alpha">111 mm²/s</strong></div>
-            <div><span>T max</span><strong id="ro-temp">0 %</strong></div>
-          </div>
-          <!-- Thermal color legend -->
-          <div class="sim-legend" aria-hidden="true">
-            <span>Froid</span>
-            <div class="sim-legend-bar"></div>
-            <span>Chaud</span>
+            <div><span id="ro-l1-label">Puissance thermique</span><strong id="ro-l1">— MW</strong></div>
+            <div><span id="ro-l2-label">Température récepteur</span><strong id="ro-l2">— °C</strong></div>
+            <div><span id="ro-l3-label">Rendement</span><strong id="ro-l3">— %</strong></div>
           </div>
         </div>
 
-        <div class="sim-controls">
+        <!-- ===== CSP controls ===== -->
+        <div class="sim-controls" id="controls-csp">
           <div class="sim-control-group">
-            <label class="sim-control-label">Matériau conducteur</label>
-            <div class="sim-materials" id="sim-materials">
-              <button class="sim-mat is-active" data-alpha="0.24" data-cool="0.0008" data-label="Cuivre" data-real="111 mm²/s">Cuivre</button>
-              <button class="sim-mat" data-alpha="0.19" data-cool="0.001" data-label="Aluminium" data-real="84 mm²/s">Aluminium</button>
-              <button class="sim-mat" data-alpha="0.06" data-cool="0.0018" data-label="Acier" data-real="4 mm²/s">Acier</button>
-              <button class="sim-mat" data-alpha="0.02" data-cool="0.003" data-label="Béton" data-real="0.5 mm²/s">Béton</button>
-            </div>
-          </div>
-
-          <div class="sim-control-group">
-            <label class="sim-control-label" for="ctrl-power">Puissance de la source
-              <span class="sim-val" id="val-power">Élevée</span>
+            <label class="sim-control-label" for="csp-sun">Élévation du soleil
+              <span class="sim-val" id="val-csp-sun">45°</span>
             </label>
-            <input type="range" id="ctrl-power" min="0.15" max="1" step="0.05" value="0.7" />
+            <input type="range" id="csp-sun" min="5" max="90" step="1" value="45" />
           </div>
-
           <div class="sim-control-group">
-            <label class="sim-control-label" for="ctrl-alpha">Diffusivité thermique
-              <span class="sim-val" id="val-alpha">0.24</span>
+            <label class="sim-control-label" for="csp-mirrors">Champ d'héliostats
+              <span class="sim-val" id="val-csp-mirrors">120 miroirs</span>
             </label>
-            <input type="range" id="ctrl-alpha" min="0.01" max="0.24" step="0.01" value="0.24" />
+            <input type="range" id="csp-mirrors" min="24" max="200" step="8" value="120" />
           </div>
-
           <div class="sim-control-group">
-            <label class="sim-control-label" for="ctrl-cool">Refroidissement ambiant
-              <span class="sim-val" id="val-cool">Faible</span>
+            <label class="sim-control-label" for="csp-focus">Précision de visée
+              <span class="sim-val" id="val-csp-focus">Optimale</span>
             </label>
-            <input type="range" id="ctrl-cool" min="0" max="0.006" step="0.0002" value="0.0008" />
+            <input type="range" id="csp-focus" min="0" max="1" step="0.05" value="1" />
           </div>
-
           <div class="sim-buttons">
-            <button id="sim-toggle" class="cta cta-primary sim-btn"><i class="fas fa-pause"></i> Pause</button>
-            <button id="sim-reset" class="cta cta-outline sim-btn"><i class="fas fa-rotate-left"></i> Réinitialiser</button>
+            <button id="csp-track" class="cta cta-primary sim-btn"><i class="fas fa-crosshairs"></i> Suivi solaire</button>
+            <button id="csp-cycle" class="cta cta-outline sim-btn"><i class="fas fa-clock"></i> Cycle jour</button>
           </div>
+          <p class="sim-note">Chaque héliostat oriente sa normale sur la bissectrice soleil–récepteur pour concentrer le rayonnement au sommet de la tour, qui alimente le cycle thermodynamique.</p>
+        </div>
 
-          <p class="sim-note">Chaque image résout la diffusion de la chaleur par la méthode des différences finies (Laplacien discret) directement sur le processeur graphique.</p>
+        <!-- ===== CVC controls ===== -->
+        <div class="sim-controls" id="controls-cvc" hidden>
+          <div class="sim-control-group">
+            <label class="sim-control-label" for="cvc-set">Température de consigne
+              <span class="sim-val" id="val-cvc-set">21 °C</span>
+            </label>
+            <input type="range" id="cvc-set" min="16" max="27" step="0.5" value="21" />
+          </div>
+          <div class="sim-control-group">
+            <label class="sim-control-label" for="cvc-out">Température extérieure
+              <span class="sim-val" id="val-cvc-out">2 °C</span>
+            </label>
+            <input type="range" id="cvc-out" min="-5" max="38" step="1" value="2" />
+          </div>
+          <div class="sim-control-group">
+            <label class="sim-control-label" for="cvc-flow">Débit d'air soufflé
+              <span class="sim-val" id="val-cvc-flow">Nominal</span>
+            </label>
+            <input type="range" id="cvc-flow" min="0.2" max="1" step="0.05" value="0.6" />
+          </div>
+          <div class="sim-buttons">
+            <button id="cvc-mode" class="cta cta-primary sim-btn"><i class="fas fa-fire"></i> Mode chauffage</button>
+            <button id="cvc-power" class="cta cta-outline sim-btn"><i class="fas fa-power-off"></i> Marche / Arrêt</button>
+          </div>
+          <p class="sim-note">La PAC réversible échange avec l'air extérieur ; la CTA distribue l'air traité dans les zones jusqu'à atteindre la consigne. Le COP chute quand l'écart de température augmente.</p>
         </div>
       </div>
     </section>
@@ -511,6 +527,6 @@
   }
   </script>
   <script type="module" src="hero-3d.js"></script>
-  <script type="module" src="heat-sim.js"></script>
+  <script type="module" src="energy-sim.js"></script>
 </body>
 </html>
