@@ -337,6 +337,34 @@ img {
   flex-wrap: wrap;
 }
 
+/* Recruiter-focused quick facts */
+.hero-facts {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 2rem;
+  padding: 0;
+}
+.hero-facts li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  padding: 0.45rem 1rem;
+  border-radius: 50px;
+}
+.hero-facts li i {
+  color: var(--secondary-light);
+  font-size: 0.9rem;
+}
+
 .cta {
   display: inline-flex;
   align-items: center;
@@ -650,6 +678,52 @@ img {
   line-height: 1.7;
 }
 
+/* Secondary tag (contract type) */
+.timeline-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--secondary);
+  background: rgba(13,148,136,0.1);
+  padding: 0.2rem 0.7rem;
+  border-radius: 50px;
+  margin-left: 0.4rem;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* Current / highlighted role */
+.timeline-item--current {
+  border-color: var(--primary-light);
+  background: linear-gradient(135deg, rgba(37,99,235,0.05), rgba(13,148,136,0.05));
+  box-shadow: var(--shadow-md);
+}
+.timeline-item--current::before {
+  background: var(--primary);
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.2);
+  animation: pulseDot 2.2s ease-in-out infinite;
+}
+.timeline-item--current h4::after {
+  content: 'En poste';
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.6rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--gradient-primary);
+  padding: 0.15rem 0.6rem;
+  border-radius: 50px;
+}
+
+@keyframes pulseDot {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(37,99,235,0.2); }
+  50% { box-shadow: 0 0 0 7px rgba(37,99,235,0.08); }
+}
+
 /* ============================================================
    EDUCATION
    ============================================================ */
@@ -957,7 +1031,21 @@ img {
 .contact-subtitle {
   color: rgba(255,255,255,0.6);
   font-size: 1.05rem;
+  margin-bottom: 2rem;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
   margin-bottom: 2.5rem;
+}
+.cta-outline-dark {
+  border-color: rgba(255,255,255,0.25);
 }
 
 .contact-grid {
