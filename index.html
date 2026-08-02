@@ -60,13 +60,8 @@
           <a href="#contact" class="cta cta-outline">Me contacter</a>
         </div>
       </div>
-      <!-- Decorative 3D panel -->
-      <div id="panel3d" aria-hidden="true">
-        <div class="panel">
-          <div class="face front"></div>
-          <div class="face back"></div>
-        </div>
-      </div>
+      <!-- Interactive 3D energy scene (Three.js) -->
+      <canvas id="hero-canvas" aria-hidden="true"></canvas>
     </section>
   </header>
 
@@ -404,5 +399,15 @@
   </a>
 
   <script src="script.js"></script>
+
+  <!-- Three.js (ES modules via CDN) for the interactive 3D hero scene -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+    }
+  }
+  </script>
+  <script type="module" src="hero-3d.js"></script>
 </body>
 </html>

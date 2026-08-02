@@ -371,44 +371,21 @@ img {
   transform: translateY(-2px);
 }
 
-/* 3D Panel (hero decoration) */
-#panel3d {
+/* Interactive 3D hero scene (Three.js canvas) */
+#hero-canvas {
   position: absolute;
-  top: 50%;
-  right: 5%;
-  transform: translate(0, -50%);
-  width: 200px;
-  height: 130px;
-  perspective: 800px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: 1;
-  opacity: 0.3;
-}
-#panel3d .panel {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  animation: rotatePanel 25s linear infinite;
-}
-#panel3d .face {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  border-radius: 8px;
-}
-#panel3d .front {
-  background: linear-gradient(135deg, rgba(59,130,246,0.4), rgba(20,184,166,0.4));
-  box-shadow: 0 0 30px rgba(59,130,246,0.2);
-}
-#panel3d .back {
-  background: rgba(100,116,139,0.3);
-  transform: rotateY(180deg);
+  pointer-events: none;
+  opacity: 0.9;
+  animation: heroCanvasFade 1.6s ease both;
 }
 
-@keyframes rotatePanel {
-  from { transform: rotateY(0deg) rotateX(15deg); }
-  to { transform: rotateY(360deg) rotateX(15deg); }
+@keyframes heroCanvasFade {
+  from { opacity: 0; }
+  to { opacity: 0.9; }
 }
 
 /* ============================================================
