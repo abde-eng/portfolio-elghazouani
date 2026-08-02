@@ -10,7 +10,43 @@ document.addEventListener('DOMContentLoaded', () => {
   initCounterAnimation();
   initActiveNavHighlight();
   initSmoothMobileMenu();
+  initControlClock();
+  initEnergyRail();
 });
+
+/* ---------- Live control-room clock ---------- */
+function initControlClock() {
+  const clock = document.getElementById('cr-clock');
+  if (!clock) return;
+  const tick = () => {
+    const now = new Date();
+    const p = (n) => String(n).padStart(2, '0');
+    clock.textContent = `${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
+  };
+  tick();
+  setInterval(tick, 1000);
+}
+
+/* ---------- Scroll energy rail (progress bar) ---------- */
+function initEnergyRail() {
+  const fill = document.getElementById('energy-rail-fill');
+  if (!fill) return;
+  let ticking = false;
+  const update = () => {
+    const doc = document.documentElement;
+    const max = doc.scrollHeight - doc.clientHeight;
+    const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+    fill.style.width = pct.toFixed(2) + '%';
+    ticking = false;
+  };
+  update();
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  });
+}
 
 /* ---------- Navbar scroll effect ---------- */
 function initNavbar() {

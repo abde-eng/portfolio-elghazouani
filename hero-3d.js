@@ -22,9 +22,9 @@ function initHeroScene(canvas) {
   const scene = new THREE.Scene()
 
   // Theme colors (match the site's blue / teal / amber palette)
-  const COLOR_PRIMARY = 0x3b82f6
-  const COLOR_SECONDARY = 0x14b8a6
-  const COLOR_ACCENT = 0xf59e0b
+  const COLOR_PRIMARY = 0x38e1ff
+  const COLOR_SECONDARY = 0x14e0c0
+  const COLOR_ACCENT = 0xffb020
 
   // ---------- Camera ----------
   const camera = new THREE.PerspectiveCamera(
@@ -166,7 +166,7 @@ function initHeroScene(canvas) {
     new THREE.BufferAttribute(positions, 3),
   )
   const particleMaterial = new THREE.PointsMaterial({
-    color: 0x93c5fd,
+    color: 0x7fdfff,
     size: 0.05,
     transparent: true,
     opacity: 0.6,

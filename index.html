@@ -9,7 +9,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-xX2J3UlP8bIz7pPj9wVjZPQvP4gx+qX7YL8PbIHjKNqj7MsbO90iaC3q6iJFASsVHVuYLDhqAoPYfRZbjY2GcA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -26,7 +26,10 @@
     gtag('config', 'G-EHXMS5CHFZ');
   </script>
 </head>
-<body>
+<body class="home">
+
+  <!-- Scroll energy rail -->
+  <div class="energy-rail" aria-hidden="true"><div class="energy-rail-fill" id="energy-rail-fill"></div></div>
 
   <!-- ========== NAVBAR ========== -->
   <header class="header">
@@ -44,6 +47,10 @@
         <li><a href="#projets">Projets</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
+      <div class="cr-status" aria-hidden="true">
+        <span class="cr-led">SYSTÈME EN LIGNE</span>
+        <span class="cr-clock" id="cr-clock">--:--:--</span>
+      </div>
     </nav>
 
     <!-- ========== HERO ========== -->
@@ -98,6 +105,7 @@
     <!-- ========== ENERGY SYSTEMS SHOWCASE (CSP / CVC) ========== -->
     <section id="simulation" class="section sim-section">
       <div class="section-header reveal">
+        <span class="sec-index">SYS.01 // Supervision des systèmes</span>
         <h2>Systèmes énergétiques en 3D</h2>
         <p class="section-subtitle" id="sim-subtitle">
           Explorez deux systèmes de mon domaine, modélisés et animés en temps réel — pilotez-les comme un ingénieur.
@@ -184,6 +192,7 @@
     <!-- ========== ABOUT ========== -->
     <section id="cv" class="section">
       <div class="section-header reveal">
+        <span class="sec-index">SYS.02 // Journal d'exploitation</span>
         <h2>À propos de moi</h2>
         <p class="section-subtitle">Élève ingénieur passionné par la transition énergétique</p>
       </div>
@@ -370,6 +379,7 @@
     <!-- ========== PROJECTS ========== -->
     <section id="projets" class="section">
       <div class="section-header reveal">
+        <span class="sec-index">SYS.03 // Dossiers techniques</span>
         <h2>Projets</h2>
         <p class="section-subtitle">Des réalisations concrètes en énergie renouvelable et efficacité énergétique</p>
       </div>
@@ -477,6 +487,7 @@
     <!-- ========== CONTACT ========== -->
     <section id="contact" class="contact-section">
       <div class="reveal">
+        <span class="sec-index">SYS.04 // Établir la liaison</span>
         <h2>Travaillons ensemble</h2>
         <p class="contact-subtitle">Vous recrutez un apprenti ingénieur capable de traiter des dossiers CEE, des audits réglementaires et de la simulation thermique dès son arrivée ? Discutons-en.</p>
         <div class="contact-actions">
