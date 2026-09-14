@@ -101,10 +101,10 @@ function initTypingAnimation() {
   if (!typingEl) return;
 
   const phrases = [
-    'Rythme : 2 semaines école / 3 semaines entreprise',
-    'Solaire PV · CSP · Efficacité énergétique',
-    'Python · IoT · Simulation thermique',
-    'Certifié ISO 50001'
+    'Audit énergétique · NF EN 16247 · DPE',
+    'CEE · 300+ dossiers · 500 000 € sécurisés',
+    'CVC · Simulation thermique dynamique (Pleiades)',
+    'Solaire PV · CSP · Efficacité énergétique'
   ];
 
   let phraseIndex = 0;
