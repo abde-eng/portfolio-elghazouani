@@ -22,9 +22,9 @@ function initHeroScene(canvas) {
   const scene = new THREE.Scene()
 
   // Theme colors (match the site's blue / teal / amber palette)
-  const COLOR_PRIMARY = 0x38e1ff
-  const COLOR_SECONDARY = 0x14e0c0
-  const COLOR_ACCENT = 0xffb020
+  const COLOR_PRIMARY = 0xff7a18
+  const COLOR_SECONDARY = 0xff2d78
+  const COLOR_ACCENT = 0xffce40
 
   // ---------- Camera ----------
   const camera = new THREE.PerspectiveCamera(

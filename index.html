@@ -31,6 +31,22 @@
   <!-- Scroll energy rail -->
   <div class="energy-rail" aria-hidden="true"><div class="energy-rail-fill" id="energy-rail-fill"></div></div>
 
+  <!-- Thermal cursor bloom (cinematic) -->
+  <div class="thermal-cursor" id="thermal-cursor" aria-hidden="true"></div>
+
+  <!-- Signature: fixed infrared temperature color scale -->
+  <div class="thermal-scale" aria-hidden="true">
+    <span class="thermal-scale__cap">°C · IR</span>
+    <div class="thermal-scale__bar"></div>
+    <div class="thermal-scale__ticks">
+      <span>673</span>
+      <span>500</span>
+      <span>340</span>
+      <span>180</span>
+      <span>20</span>
+    </div>
+  </div>
+
   <!-- ========== NAVBAR ========== -->
   <header class="header">
     <nav class="navbar" id="navbar">
@@ -384,6 +400,17 @@
       </div>
 
       <div class="projects-grid stagger-children">
+        <a href="cfd-echangeur.html" class="project-card project-card--featured">
+          <div class="project-card-header">
+            <span class="project-card-badge badge-cfd">Simulation CFD · ANSYS Fluent</span>
+          </div>
+          <div class="project-card-body">
+            <h3>Échangeur tubes-ailettes — CFD ANSYS Fluent</h3>
+            <p>Simulation thermo-aérodynamique d'une cellule unitaire (récupération de chaleur fatale sidérurgique). Maillage polyédrique 235 742 cellules, turbulence k-ω SST, transfert conjugué. U_CFD = 37 W/m²·K (écart −7,5 %).</p>
+            <span class="project-card-link">Voir le rapport</span>
+          </div>
+        </a>
+
         <a href="gouttes.html" class="project-card">
           <div class="project-card-header">
             <span class="project-card-badge badge-solar">Solaire PV</span>

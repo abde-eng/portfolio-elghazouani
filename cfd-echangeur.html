@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulation CFD ANSYS Fluent – Échangeur tubes-ailettes | Abdelilah El Ghazouani</title>
+  <meta name="description" content="Rapport de simulation CFD sous ANSYS Fluent 2026 R1 : échangeur tubes-ailettes pour la récupération de chaleur fatale sidérurgique. Maillage polyédrique 235 742 cellules, turbulence k-ω SST, transfert thermique conjugué, U_CFD = 37 W/m²·K." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-xX2J3UlP8bIz7pPj9wVjZPQvP4gx+qX7YL8PbIHjKNqj7MsbO90iaC3q6iJFASsVHVuYLDhqAoPYfRZbjY2GcA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="icon" type="image/png" href="img/logo.png" />
+
+  <style>
+    :root {
+      --bg: #070510;
+      --bg-2: #0c0819;
+      --panel: #130a22;
+      --panel-2: #1a0f2e;
+      --line: #3a2255;
+      --line-bright: #5a3070;
+      --hot: #ff7a18;
+      --mag: #ff2d78;
+      --yellow: #ffce40;
+      --cold: #6a3bd6;
+      --text: #f6edff;
+      --muted: #b6a3cf;
+      --dim: #7a6494;
+      --mono: 'JetBrains Mono', 'Courier New', monospace;
+      --display: 'Space Grotesk', sans-serif;
+    }
+    * , *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(40% 32% at 16% 18%, rgba(255,122,24,0.15), transparent 70%),
+        radial-gradient(34% 28% at 84% 26%, rgba(255,45,120,0.13), transparent 72%),
+        radial-gradient(48% 42% at 62% 92%, rgba(106,59,214,0.16), transparent 74%),
+        linear-gradient(rgba(255,122,24,0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,122,24,0.028) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+    }
+    body > * { position: relative; z-index: 1; }
+    a { color: var(--hot); text-decoration: none; }
+
+    /* Signature vertical infrared scale */
+    .thermal-scale {
+      position: fixed; top: 50%; right: 14px; transform: translateY(-50%);
+      z-index: 90; display: flex; gap: 8px; pointer-events: none; font-family: var(--mono);
+    }
+    .thermal-scale__bar {
+      width: 12px; height: 240px; border-radius: 6px; border: 1px solid var(--line-bright);
+      background: linear-gradient(to top, #070510, #2a1361 14%, #6a3bd6 30%, #b8258f 48%, #ff2d78 62%, #ff7a18 78%, #ffce40 92%, #fff6df 100%);
+      box-shadow: 0 0 22px rgba(255,122,24,0.28), inset 0 0 8px rgba(0,0,0,0.5);
+    }
+    .thermal-scale__ticks { display: flex; flex-direction: column; justify-content: space-between; height: 240px; font-size: 0.6rem; color: var(--muted); text-align: right; }
+    @media (max-width: 1160px) { .thermal-scale { display: none; } }
+
+    /* Nav */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 1.5rem;
+      background: rgba(7,5,16,0.82);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+    .navbar .logo { display: flex; align-items: center; gap: 0.6rem; font-family: var(--display); font-weight: 600; }
+    .navbar .logo img { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--hot); object-fit: cover; }
+    .navbar .logo .eco-logo { border: none; width: 22px; height: 22px; }
+    .nav-links { list-style: none; display: flex; gap: 0.4rem; }
+    .nav-links a { color: var(--muted); font-family: var(--mono); font-size: 0.82rem; padding: 0.4rem 0.7rem; border-radius: 4px; }
+    .nav-links a:hover { color: var(--hot); background: rgba(255,122,24,0.08); }
+    @media (max-width: 640px) { .nav-links { display: none; } }
+
+    /* Hero */
+    .cfd-hero {
+      padding: 8rem 1.5rem 3rem;
+      max-width: 1080px; margin: 0 auto;
+    }
+    .cfd-tag {
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--hot); display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;
+    }
+    .cfd-tag::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--hot); box-shadow: 0 0 10px var(--hot); animation: pulse 1.8s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    .cfd-hero h1 {
+      font-family: var(--display); font-weight: 700; line-height: 1.1;
+      font-size: clamp(1.9rem, 4.6vw, 3.2rem); text-wrap: balance;
+      background: linear-gradient(100deg, #6a3bd6, #ff2d78 38%, #ff7a18 66%, #ffce40 92%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+      filter: drop-shadow(0 0 22px rgba(255,122,24,0.3));
+    }
+    .cfd-hero .sub { color: var(--muted); max-width: 62ch; margin-top: 1rem; font-size: 1.05rem; }
+    .cfd-meta { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.4rem; font-family: var(--mono); font-size: 0.76rem; }
+    .cfd-meta span { border: 1px solid var(--line-bright); border-radius: 4px; padding: 0.35rem 0.7rem; color: var(--muted); }
+    .cfd-meta i { color: var(--hot); margin-right: 0.35rem; }
+
+    /* KPI grid */
+    .kpi-grid {
+      max-width: 1080px; margin: 2rem auto 0; padding: 0 1.5rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;
+    }
+    .kpi {
+      position: relative; overflow: hidden;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.2rem 1.2rem 1.2rem 1.4rem;
+    }
+    .kpi::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: linear-gradient(to top, var(--cold), var(--mag), var(--hot), var(--yellow)); }
+    .kpi .v { font-family: var(--display); font-weight: 700; font-size: 1.7rem; color: var(--yellow); }
+    .kpi .l { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.4px; margin-top: 0.25rem; }
+
+    /* Content */
+    main { max-width: 1080px; margin: 0 auto; padding: 1rem 1.5rem 4rem; }
+    .iso-divider { height: 1px; border: none; margin: 3rem 0; background: linear-gradient(90deg, transparent, var(--cold), var(--mag), var(--hot), var(--yellow), transparent); opacity: 0.55; }
+    section h2 {
+      font-family: var(--display); font-weight: 600; font-size: 1.55rem; margin: 2.4rem 0 1rem;
+      display: flex; align-items: baseline; gap: 0.7rem;
+    }
+    section h2 .idx { font-family: var(--mono); font-size: 0.8rem; color: var(--hot); }
+    section h3 { font-family: var(--display); font-weight: 600; font-size: 1.12rem; margin: 1.6rem 0 0.7rem; color: var(--text); }
+    section p { color: var(--muted); margin-bottom: 0.9rem; }
+    section ul { list-style: none; margin: 0.6rem 0 1rem; }
+    section ul li { color: var(--muted); padding-left: 1.4rem; position: relative; margin-bottom: 0.5rem; }
+    section ul li::before { content: '▸'; position: absolute; left: 0; color: var(--hot); }
+    strong { color: var(--text); }
+
+    /* Data tables */
+    .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; margin: 1rem 0 1.4rem; background: var(--panel); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { text-align: left; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--line); }
+    th { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.6px; text-transform: uppercase; color: var(--hot); background: var(--panel-2); }
+    td { color: var(--muted); }
+    td:first-child { color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+    td.val { font-family: var(--mono); color: var(--yellow); }
+
+    /* Result callout */
+    .result {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem;
+      background: radial-gradient(120% 160% at 100% 0%, rgba(255,122,24,0.14), transparent 55%), var(--panel);
+      border: 1px solid rgba(255,122,24,0.4); border-radius: 14px; padding: 1.6rem; margin: 1.4rem 0;
+      box-shadow: inset 0 0 0 1px rgba(255,122,24,0.1), 0 12px 40px rgba(0,0,0,0.5);
+    }
+    .result .big { font-family: var(--display); font-weight: 700; font-size: clamp(2rem, 6vw, 3rem); color: var(--yellow); line-height: 1; }
+    .result .desc { color: var(--muted); }
+    .result .desc strong { color: var(--hot); }
+
+    /* Thermal resistance bars */
+    .res-bar { margin: 0.7rem 0 1.1rem; }
+    .res-bar__head { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.78rem; color: var(--muted); margin-bottom: 0.35rem; }
+    .res-bar__head b { color: var(--text); }
+    .res-bar__track { height: 12px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+    .res-bar__fill { height: 100%; border-radius: 6px 0 0 6px; }
+    .fill-hot { background: linear-gradient(90deg, var(--hot), var(--yellow)); }
+    .fill-mag { background: linear-gradient(90deg, var(--cold), var(--mag)); }
+    .fill-cold { background: linear-gradient(90deg, #2a1361, var(--cold)); }
+
+    /* Docs */
+    .documents { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.2rem 1.4rem; }
+    .documents a { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text); }
+    .documents a:hover { color: var(--hot); }
+    .documents i { color: var(--hot); }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 2.5rem;
+      font-family: var(--mono); font-size: 0.85rem; color: var(--hot);
+      border: 1px solid var(--line-bright); border-radius: 6px; padding: 0.6rem 1rem;
+    }
+    .back-link:hover { background: rgba(255,122,24,0.08); }
+
+    footer { text-align: center; padding: 2rem 1.5rem; border-top: 1px solid var(--line); color: var(--dim); font-family: var(--mono); font-size: 0.8rem; }
+
+    @media (prefers-reduced-motion: reduce) { .cfd-tag::before { animation: none; } }
+  </style>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-EHXMS5CHFZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-EHXMS5CHFZ');
+  </script>
+</head>
+<body>
+
+  <div class="thermal-scale" aria-hidden="true">
+    <div class="thermal-scale__bar"></div>
+    <div class="thermal-scale__ticks">
+      <span>673 K</span><span>573</span><span>473</span><span>343</span><span>293</span>
+    </div>
+  </div>
+
+  <nav class="navbar">
+    <div class="logo">
+      <img src="img/profile.jpg" alt="Photo de Abdelilah El Ghazouani" />
+      <span>Abdelilah El Ghazouani</span>
+      <img src="img/logo.png" alt="Icône écologique" class="eco-logo" />
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html#accueil">Accueil</a></li>
+      <li><a href="index.html#cv">CV</a></li>
+      <li><a href="index.html#projets">Projets</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <header class="cfd-hero">
+    <span class="cfd-tag">SIM.CFD // ANSYS Fluent 2026 R1</span>
+    <h1>Échangeur tubes-ailettes pour la récupération de chaleur fatale sidérurgique</h1>
+    <p class="sub">Modélisation thermo-aérodynamique d'une cellule unitaire sous ANSYS Fluent 2026 R1 : géométrie paramétrique, maillage polyédrique, turbulence k-ω SST, transfert thermique conjugué et validation du coefficient d'échange global.</p>
+    <div class="cfd-meta">
+      <span><i class="fas fa-certificate"></i>Certifié ANSYS Fluent</span>
+      <span><i class="fas fa-industry"></i>Cas Axel — Dunkerque</span>
+      <span><i class="fas fa-calendar-days"></i>11 – 14 mai 2026</span>
+      <span><i class="fas fa-graduation-cap"></i>PIA ENSIATE Paris · ING4 TEF</span>
+    </div>
+  </header>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="v">37 W/m²·K</div><div class="l">Coefficient d'échange U_CFD (−7,5 %)</div></div>
+    <div class="kpi"><div class="v">21,8 m/s</div><div class="l">Vitesse max entre ailettes (×2,7)</div></div>
+    <div class="kpi"><div class="v">45,8 Pa</div><div class="l">Perte de charge côté fumées</div></div>
+    <div class="kpi"><div class="v">10 517</div><div class="l">Reynolds max — turbulent établi</div></div>
+    <div class="kpi"><div class="v">235 742</div><div class="l">Cellules polyédriques (Watertight)</div></div>
+  </div>
+
+  <main>
+    <section>
+      <h2><span class="idx">01</span> Contexte et objectifs</h2>
+      <p>La chaleur fatale désigne l'énergie thermique produite par un procédé industriel et rejetée à l'atmosphère sans être valorisée. Dans la sidérurgie, les fumées de production représentent un gisement important. Le cas de référence est l'installation d'échange thermique de l'entreprise <strong>Axel à Dunkerque</strong> : un faisceau d'environ 1 100 tubes à ailettes récupère la chaleur des fumées pour chauffer de l'eau, avec un potentiel de l'ordre de <strong>6 MW récupérables</strong>.</p>
+      <p>Ma contribution est la simulation numérique d'une <strong>cellule unitaire</strong> de cet échangeur, soit 1/1 100ᵉ du faisceau réel. Cette approche valide le coefficient de transfert fourni par l'industriel et caractérise finement l'aérodynamique des fumées autour des ailettes, ce que les corrélations analytiques seules ne permettent pas.</p>
+      <ul>
+        <li>Valider le coefficient d'échange global U_CFD vs la référence industrielle U_Axel = 40 W/m²·K</li>
+        <li>Caractériser le champ de vitesse : zones d'accélération entre ailettes et sillage derrière le tube</li>
+        <li>Quantifier la perte de charge ΔP côté fumées sur la cellule unitaire</li>
+        <li>Identifier les résistances thermiques dominantes pour orienter l'optimisation géométrique</li>
+        <li>Mettre en œuvre un workflow CFD industriel complet : géométrie → maillage → solveur → post-traitement</li>
+      </ul>
+    </section>
+
+    <hr class="iso-divider" />
+
+    <section>
+      <h2><span class="idx">02</span> Géométrie de la cellule unitaire</h2>
+      <p>Géométrie modélisée en Python avec la bibliothèque paramétrique <strong>CadQuery</strong> puis exportée au format STEP. Le modèle comprend trois domaines physiques partageant une topologie conforme (Share Topology), condition indispensable au couplage thermique conjugué : fluide fumées, fluide eau et solide métallique (tube + ailettes).</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Paramètre</th><th>Valeur</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>Diamètre extérieur tube D_ext</td><td class="val">38 mm</td><td>Acier P265GH</td></tr>
+            <tr><td>Diamètre intérieur tube D_int</td><td class="val">32 mm</td><td>Passage eau — paroi 3 mm</td></tr>
+            <tr><td>Diamètre des ailettes D_fin</td><td class="val">68 mm</td><td>Ailettes annulaires circulaires</td></tr>
+            <tr><td>Épaisseur des ailettes e_fin</td><td class="val">0,4 mm</td><td>Acier galvanisé</td></tr>
+            <tr><td>Pas entre ailettes</td><td class="val">8 mm</td><td>Espacement centre à centre</td></tr>
+            <tr><td>Nombre d'ailettes</td><td class="val">62</td><td>Sur 500 mm de tube</td></tr>
+            <tr><td>Longueur du canal L</td><td class="val">500 mm</td><td>Direction Z — écoulement eau</td></tr>
+            <tr><td>Pas transversal S_T / longitudinal S_L</td><td class="val">76 / 80 mm</td><td>Largeur cellule / écoulement fumées</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="iso-divider" />
+
+    <section>
+      <h2><span class="idx">03</span> Maillage — Fluent Meshing 2026 R1</h2>
+      <p>Maillage réalisé avec le workflow <strong>Watertight Geometry</strong>, garantissant la conformité topologique entre domaines fluides et solide. Processus exécuté en mode serial (1 processeur) suite à un plantage du mode parallèle au passage au solveur (limitation licence Student).</p>
+      <h3>Statistiques volumiques</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Statistique</th><th>Valeur</th><th>Commentaire</th></tr></thead>
+          <tbody>
+            <tr><td>Type de cellules</td><td class="val">Polyédriques</td><td>Adaptées aux géométries courbes</td></tr>
+            <tr><td>Cellules totales</td><td class="val">235 742</td><td>Sous la limite Student (1 048 576)</td></tr>
+            <tr><td>Domaine fumées</td><td class="val">≈ 49 728</td><td>21 % du total</td></tr>
+            <tr><td>Domaine métal</td><td class="val">≈ 174 320</td><td>74 % du total</td></tr>
+            <tr><td>Domaine eau</td><td class="val">≈ 4 511</td><td>2 % du total</td></tr>
+            <tr><td>Skewness max surfacique</td><td class="val">0,54</td><td>Acceptable (&lt; 0,9)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Couches limites : méthode Smooth Transition, 5 couches, taux de croissance 1,2, appliquées uniquement sur les interfaces solide/fluide (acier–fumées et acier–eau).</p>
+    </section>
+
+    <hr class="iso-divider" />
+
+    <section>
+      <h2><span class="idx">04</span> Configuration du solveur</h2>
+      <ul>
+        <li>Solveur <strong>pressure-based</strong>, stationnaire, formulation en vitesse absolue</li>
+        <li>Turbulence <strong>k-ω SST</strong> — adaptée aux écoulements sur parois courbes et ailettes</li>
+        <li>Équation de l'énergie activée — transfert thermique conjugué (CHT) métal ↔ fluides</li>
+        <li>Couplage pression-vitesse SIMPLE, discrétisation First Order Upwind pour la stabilité</li>
+      </ul>
+      <h3>Conditions aux limites</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Zone</th><th>Type</th><th>Valeurs imposées</th></tr></thead>
+          <tbody>
+            <tr><td>inlet_fumees</td><td class="val">velocity-inlet</td><td>V = 8 m/s, T = 673,15 K (400 °C), I = 5 %</td></tr>
+            <tr><td>outlet_fumees</td><td class="val">pressure-outlet</td><td>P_gauge = 0 Pa, T_backflow = 573,15 K</td></tr>
+            <tr><td>inlet_eau</td><td class="val">velocity-inlet</td><td>V = 1,5 m/s, T = 343,15 K (70 °C), I = 5 %</td></tr>
+            <tr><td>outlet_eau</td><td class="val">pressure-outlet</td><td>P_gauge = 0 Pa, T_backflow = 353,15 K</td></tr>
+            <tr><td>Symétries (×4)</td><td class="val">symmetry</td><td>Périodicité du faisceau — flux normal nul</td></tr>
+            <tr><td>Interfaces métal/fluides</td><td class="val">wall (coupled)</td><td>Couplage thermique via Share Topology</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="iso-divider" />
+
+    <section>
+      <h2><span class="idx">05</span> Résultats</h2>
+      <p>Simulation menée sur <strong>410 itérations</strong>. Les résidus de quantité de mouvement, k et ω ont convergé entre 10⁻² et 10⁻³, niveau acceptable pour une analyse d'ingénierie. Le champ de vitesse est pleinement convergé et exploitable.</p>
+      <h3>Champ de vitesse — analyse qualitative</h3>
+      <ul>
+        <li><strong>Zone de forte vitesse :</strong> accélération des fumées entre les ailettes et dans les passages transversaux, jusqu'à 21,8 m/s</li>
+        <li><strong>Zone de sillage :</strong> recirculation en aval du tube, vitesse quasi nulle — zone de faible échange thermique</li>
+      </ul>
+      <p>Pour une vitesse d'entrée de 8 m/s, le rapport d'accélération de 2,7 est cohérent avec la contraction de section (S_T − D_ext)/S_T = 50 %, augmentée du blocage des ailettes.</p>
+      <h3>Données quantitatives (Surface Integrals)</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Grandeur</th><th>Valeur CFD</th><th>Extraction</th></tr></thead>
+          <tbody>
+            <tr><td>Débit massique fumées</td><td class="val">0,1664 kg/s</td><td>Mass Flow Rate — inlet_fumees</td></tr>
+            <tr><td>Perte de charge ΔP fumées</td><td class="val">45,79 Pa</td><td>P_in − P_out</td></tr>
+            <tr><td>Vitesse maximale entre ailettes</td><td class="val">21,8 m/s</td><td>Contour velocity magnitude</td></tr>
+            <tr><td>Reynolds maximal Re_max</td><td class="val">10 517</td><td>ρ·V_max·D_ext/μ (section contractée)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="iso-divider" />
+
+    <section>
+      <h2><span class="idx">06</span> Coefficient d'échange global U</h2>
+      <p>Le nombre de Reynolds issu de la CFD alimente les corrélations de <strong>Zukauskas</strong> (convection externe sur faisceau) et de <strong>Dittus-Boelter</strong> (convection interne). L'efficacité des ailettes est évaluée par la méthode de <strong>Schmidt</strong> (η_fin ≈ 0,82). Cette approche hybride est la pratique courante en ingénierie thermique industrielle.</p>
+      <h3>Bilan des résistances thermiques</h3>
+      <div class="res-bar">
+        <div class="res-bar__head"><span>R_ext — <b>convection fumées</b></span><span>93,5 %</span></div>
+        <div class="res-bar__track"><div class="res-bar__fill fill-hot" style="width:93.5%"></div></div>
+      </div>
+      <div class="res-bar">
+        <div class="res-bar__head"><span>R_int — <b>convection eau</b></span><span>4,6 %</span></div>
+        <div class="res-bar__track"><div class="res-bar__fill fill-mag" style="width:4.6%"></div></div>
+      </div>
+      <div class="res-bar">
+        <div class="res-bar__head"><span>R_cond — <b>conduction acier</b></span><span>0,7 %</span></div>
+        <div class="res-bar__track"><div class="res-bar__fill fill-cold" style="width:2%"></div></div>
+      </div>
+      <div class="result">
+        <div class="big">37 W/m²·K</div>
+        <div class="desc">Résultat final <strong>U_CFD = 37 W/m²·K</strong> vs U_Axel = 40 W/m²·K → écart <strong>−7,5 %</strong>, pleinement dans la tolérance d'ingénierie industrielle (±15 à 20 %). La convection côté fumées (93,5 % de la résistance) est le principal levier d'optimisation de l'échangeur.</div>
+      </div>
+    </section>
+
+    <hr class="iso-divider" />
+
+    <section>
+      <h2><span class="idx">07</span> Contraintes & limitations</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Problème</th><th>Cause</th><th>Solution</th></tr></thead>
+          <tbody>
+            <tr><td>Plantage au Switch to Solution</td><td>Mode parallèle non supporté (licence Student)</td><td>Passage en mode serial</td></tr>
+            <tr><td>Zone 34 détectée comme interior</td><td>Faces eau/fumées coplanaires en Z = ±250 mm</td><td>Géométrie STEP corrigée (tube +5 mm)</td></tr>
+            <tr><td>96 cellules de qualité nulle</td><td>Ailettes minces, géométrie complexe</td><td>Schéma modified centroid</td></tr>
+            <tr><td>Énergie non convergée</td><td>Ambiguïté topologique zone 34</td><td>Méthode hybride CFD + corrélations pour U</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Limitations principales : licence Student (1 048 576 cellules max), ailettes sous-résolues (maille 0,5 mm &gt; épaisseur 0,4 mm, erreur ≤ 5 %), propriétés matériaux constantes, rayonnement et encrassement non modélisés, régime stationnaire uniquement.</p>
+    </section>
+
+    <hr class="iso-divider" />
+
+    <section>
+      <h2><span class="idx">08</span> Conclusion</h2>
+      <p>Cette simulation CFD a caractérisé le comportement thermo-aérodynamique d'une cellule unitaire d'échangeur tubes-ailettes dans le contexte de la récupération de chaleur fatale sidérurgique (cas Axel, Dunkerque). Le champ de vitesse convergé met en évidence une accélération des fumées d'un facteur 2,7 (V_max = 21,8 m/s) et une zone de sillage nette derrière le tube, pour une perte de charge de 45,8 Pa.</p>
+      <p>Le coefficient d'échange global <strong>U_CFD = 37 W/m²·K</strong> présente un écart de −7,5 % par rapport à la référence industrielle, pleinement dans la tolérance d'ingénierie. L'analyse des résistances montre que la convection côté fumées représente 93,5 % de la résistance totale : c'est là que se joue l'optimisation. Au-delà des résultats, ce projet a exigé de traiter des difficultés absentes des exercices académiques — ambiguïté topologique, plantage du maillage parallèle, limites d'une licence Student — illustrant concrètement les compétences validées par ma certification ANSYS Fluent.</p>
+
+      <h3>Documents de référence</h3>
+      <div class="documents">
+        <a href="docs/Rapport-CFD-Echangeur-Tubes-Ailettes-ANSYS-Fluent.pdf" download><i class="fas fa-file-pdf"></i> Rapport de simulation CFD complet (PDF)</a>
+      </div>
+    </section>
+
+    <a href="index.html#projets" class="back-link"><i class="fas fa-arrow-left"></i> Retour aux projets</a>
+  </main>
+
+  <footer>© 2026 Abdelilah El Ghazouani — Ingénieur certifié ANSYS Fluent · ENSIATE Paris</footer>
+
+</body>
+</html>

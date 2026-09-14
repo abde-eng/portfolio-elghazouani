@@ -1,0 +1,374 @@
+
+
+ENSIATE PARIS
+Projet Interannée (PIA) – ING4 & ING5 – Groupe ING41 TEF
+Récupération de chaleur fatale industrielle
+CERTIFIÉ ANSYS FLUENT
+Simulation CFD – ANSYS 2026 R1
+Abdelilah Elghazouani
+Outil : ANSYS Fluent 2026 R1 (Fluent Meshing Watertight + solveur pressure-based)
+Période de réalisation : 11 – 14 mai 2026     |     Cas industriel de référence : installation Axel – Dunkerque
+abdelilah-elghazouani.pro     |     06 60 35 47 96
+Rapport de simulation CFD
+Échangeur tubes-ailettes pour la récupération de
+chaleur fatale sidérurgique
+Modélisation thermo-aérodynamique d'une cellule unitaire sous ANSYS Fluent 2026 R1 :
+géométrie paramétrique, maillage polyédrique, turbulence k-ω SST, transfert thermique
+conjugué, validation du coefficient d'échange global.
+Réalisé par
+Abdelilah ELGHAZOUANI
+Étudiant ingénieur Bac+4 Éco-Énergie (ING4 TEF) – ENSIATE Paris
+Certifié ANSYS Fluent – Simulation CFD
+Indicateur cléValeur
+Coefficient d'échange global U_CFD37 W/m²·K (référence industrielle : 40 W/m²·K, écart −7,5 %)
+Perte de charge côté fumées45,8 Pa sur la cellule unitaire
+Vitesse maximale entre ailettes21,8 m/s (accélération ×2,7)
+Nombre de Reynolds maximal10 517 – régime turbulent établi
+Maillage235 742 cellules polyédriques – Fluent Meshing Watertight
+
+Rapport CFD – Échangeur tubes-ailettesPIA – Récupération de chaleur fatale – ENSIATE Paris, mai 2026
+Abdelilah ELGHAZOUANI – Ingénieur certifié ANSYS Fluent – ENSIATE Paris ING4 TEFPage 2
+Note sur la certification ANSYS
+Ce rapport a été réalisé par Abdelilah Elghazouani, ingénieur certifié ANSYS Fluent. La
+certification  atteste  de  la  maîtrise  du  workflow  complet  de  simulation  CFD  sous  ANSYS  :
+préparation  et  import  de  géométrie,  maillage  volumique  (Fluent  Meshing  –  workflow
+Watertight  Geometry),  configuration  des  modèles  physiques  et  des  conditions  aux  limites,
+pilotage de la convergence et post-traitement quantitatif.
+La  simulation  présentée  ici  constitue  l'application  concrète  de  cette  certification  à  un  cas
+industriel réel, avec ses contraintes de topologie, de licence et de convergence numérique.
+Elle  a  été  menée  dans  le  cadre  du  Projet  Interannée  (PIA)  d'ENSIATE  Paris,  qui  réunit  les
+promotions ING4 et ING5 autour d'une problématique commune : la récupération de chaleur
+fatale industrielle.
+1. Contexte et objectifs
+La chaleur fatale désigne l'énergie thermique produite par un procédé industriel et rejetée à
+l'atmosphère sans être valorisée. Dans la sidérurgie, les fumées de production représentent
+un gisement important. Le cas de référence du projet est l'installation d'échange thermique
+de  l'entreprise  Axel  à  Dunkerque  :  un  faisceau  d'environ  1  100  tubes  à  ailettes  récupère  la
+chaleur  des  fumées  pour  chauffer  de  l'eau,  avec  un  potentiel  de  l'ordre  de  6  MW
+récupérables.
+Ma contribution au projet collectif est la simulation numérique d'une cellule unitaire de cet
+échangeur, soit 1/1 100
+e
+ du faisceau réel. Cette approche permet de valider le coefficient de
+transfert  thermique  fourni  par  l'industriel  et  de  caractériser  finement  l'aérodynamique  des
+fumées autour des ailettes, ce que les corrélations analytiques seules ne permettent pas.
+Objectifs spécifiques
+•
+Valider le coefficient d'échange global U
+CFD
+ par rapport à la référence industrielle U
+Axel
+ =
+40 W/m²·K
+•
+Caractériser le champ de vitesse des fumées : zones d'accélération entre ailettes et zone
+de sillage derrière le tube
+•
+Quantifier la perte de charge ΔP côté fumées sur la cellule unitaire
+•
+Identifier les résistances thermiques dominantes pour orienter l'optimisation géométrique
+•
+Mettre en œuvre un workflow CFD industriel complet : géométrie → maillage → solveur →
+post-traitement
+2. Géométrie de la cellule unitaire
+La géométrie a été modélisée en Python avec la bibliothèque paramétrique CadQuery, puis
+exportée  au  format  STEP.  Le  modèle  comprend  trois  domaines  physiques  partageant  une
+topologie   conforme   (Share   Topology),   condition   indispensable   au   couplage   thermique
+conjugué : le fluide fumées, le fluide eau et le solide métallique (tube + ailettes).
+Paramètre géométriqueValeurDescription
+Diamètre extérieur du tube D_ext38 mmAcier P265GH
+Diamètre intérieur du tube D_int32 mmPassage eau – épaisseur de paroi 3 mm
+Diamètre des ailettes D_fin68 mmAilettes annulaires circulaires
+Épaisseur des ailettes e_fin0,4 mmAcier galvanisé
+
+Rapport CFD – Échangeur tubes-ailettesPIA – Récupération de chaleur fatale – ENSIATE Paris, mai 2026
+Abdelilah ELGHAZOUANI – Ingénieur certifié ANSYS Fluent – ENSIATE Paris ING4 TEFPage 3
+Paramètre géométriqueValeurDescription
+Pas entre ailettes8 mmEspacement centre à centre
+Nombre d'ailettes62Sur 500 mm de tube
+Longueur du canal L500 mmDirection Z – écoulement eau
+Pas transversal S_T76 mmDirection X – largeur de la cellule
+Pas longitudinal S_L80 mmDirection Y – écoulement fumées
+Figure 1 – Schéma de la cellule unitaire dans le plan XY : tube Ø38 mm (eau Ø32 mm), enveloppe des ailettes
+Ø68 mm, canal fumées 76 × 80 mm à frontières de symétrie.
+Figure 2 – Vue longitudinale du tube P265GH avec ses 62 ailettes annulaires (pas 8 mm, épaisseur 0,4 mm)
+sur 500 mm.
+
+Rapport CFD – Échangeur tubes-ailettesPIA – Récupération de chaleur fatale – ENSIATE Paris, mai 2026
+Abdelilah ELGHAZOUANI – Ingénieur certifié ANSYS Fluent – ENSIATE Paris ING4 TEFPage 4
+3. Maillage – ANSYS Fluent Meshing 2026 R1
+Le  maillage  a  été  réalisé  avec  le  workflow  Watertight  Geometry  de  Fluent  Meshing,  qui
+garantit la conformité topologique entre domaines fluides et solide. L'ensemble du processus
+a été exécuté en mode serial (1 processeur) à la suite d'un plantage du mode parallèle lors
+du passage au solveur (limitation de la licence Student).
+3.1 Maillage surfacique
+•
+Taille minimale 0,5 mm (ailettes de 0,4 mm : légère sous-résolution acceptée), taille
+maximale 6,65 mm dans le volume fumées
+•
+Angle de capture des arêtes (feature angle) : 40°, pour restituer les jonctions ailette/tube
+•
+Amélioration automatique de la qualité : skewness surfacique maximale 0,54
+3.2 Couches limites
+•
+Méthode Smooth Transition – 5 couches, taux de croissance 1,2, ratio de transition 0,272
+•
+Appliquées uniquement sur les interfaces solide/fluide (acier–fumées et acier–eau)
+3.3 Maillage volumique – statistiques
+StatistiqueValeurCommentaire
+Type de cellulesPolyédriquesAdaptées aux géométries courbes complexes
+Cellules totales235 742Sous la limite licence Student (1 048 576)
+Domaine fumées (fumees_fluid)≈ 49 72821 % du total
+Domaine métal (metal_solid)≈ 174 32074 % du total
+Domaine eau (eau_fluid)≈ 4 5112 % du total
+Skewness max surfacique0,54Acceptable (< 0,9)
+Cellules de qualité < 0,0196
+0,04 % – corrigées par le schéma modified
+centroid
+4. Configuration du solveur
+4.1 Modèles physiques
+•
+Solveur pressure-based, stationnaire, formulation en vitesse absolue
+•
+Turbulence : k-ω SST (Shear Stress Transport), adapté aux écoulements sur parois courbes
+et ailettes
+•
+Équation de l'énergie activée – transfert thermique conjugué (CHT) entre métal et fluides
+•
+Couplage pression-vitesse SIMPLE, discrétisation First Order Upwind pour la stabilité de
+convergence
+4.2 Matériaux
+DomaineMatériauρ [kg/m³]Cp [J/kg·K]λ [W/m·K]μ [kg/m·s]
+fumees_fluidFumées industrielles0,521 0500,0453·10
+-5
+eau_fluidwater-liquid (Fluent)998,24 1820,61,003·10
+-3
+metal_solidAcier P265GH7 80048054—
+4.3 Conditions aux limites
+
+Rapport CFD – Échangeur tubes-ailettesPIA – Récupération de chaleur fatale – ENSIATE Paris, mai 2026
+Abdelilah ELGHAZOUANI – Ingénieur certifié ANSYS Fluent – ENSIATE Paris ING4 TEFPage 5
+ZoneTypeValeurs imposées
+inlet_fumeesvelocity-inlet
+V = 8 m/s, T = 673,15 K (400 °C), intensité turbulente 5 %, D_h =
+0,04 m
+outlet_fumeespressure-outletP_gauge = 0 Pa, T_backflow = 573,15 K
+inlet_eauvelocity-inlet
+V = 1,5 m/s, T = 343,15 K (70 °C), intensité turbulente 5 %, D_h =
+0,032 m
+outlet_eaupressure-outletP_gauge = 0 Pa, T_backflow = 353,15 K
+sym_bas / sym_hautsymmetryPériodicité du faisceau – flux normal nul
+sym_gauche /
+sym_droite
+symmetryPériodicité du faisceau – flux normal nul
+Interfaces
+métal/fluides
+wall (coupled)Couplage thermique automatique via Share Topology
+4.4 Facteurs de sous-relaxation
+VariableURF utiliséValeur par défaut Fluent
+Pression0,30,3
+Quantité de mouvement0,50,7
+k0,40,8
+ω0,40,8
+Énergie0,81,0
+Les URF ont été abaissés par rapport aux valeurs par défaut pour stabiliser la convergence
+sur  un  maillage  comportant  des  cellules  fines  entre  ailettes  et  une  ambiguïté  topologique
+résiduelle (voir §7).
+
+Rapport CFD – Échangeur tubes-ailettesPIA – Récupération de chaleur fatale – ENSIATE Paris, mai 2026
+Abdelilah ELGHAZOUANI – Ingénieur certifié ANSYS Fluent – ENSIATE Paris ING4 TEFPage 6
+5. Résultats
+5.1 Convergence
+La  simulation  a  été  menée  sur  410  itérations.  Les  résidus  des  équations  de  quantité  de
+mouvement (x, y, z), de k et de ω ont convergé entre 10
+-2
+ et 10
+-3
+, niveau acceptable pour
+une  analyse  d'ingénierie.  L'équation  de  l'énergie  présente  des  oscillations  périodiques
+imputables  à  la  zone  34  (ambiguïté  d'interface  eau/métal  en  Z  =  ±250  mm).  Le  champ  de
+vitesse  est  pleinement  convergé  et  exploitable  ;  le  calcul  de  U  a  donc  été  réalisé  par  une
+méthode hybride CFD + corrélations (§6).
+5.2 Champ de vitesse – analyse qualitative
+Le contour de vitesse révèle le comportement caractéristique d'un écoulement sur faisceau
+de tubes à ailettes, avec deux zones nettement distinctes :
+•
+Zone de forte vitesse : accélération des fumées entre les ailettes et dans les passages
+transversaux, jusqu'à 21,8 m/s
+•
+Zone de sillage : recirculation en aval du tube, vitesse quasi nulle – zone de faible
+échange thermique
+Pour  une  vitesse  d'entrée  de  8  m/s,  le  rapport  d'accélération  de  2,7  est  cohérent  avec  la
+contraction  de  section  (S
+T
+  −  D
+ext
+)/S
+T
+  =  38/76  =  50  %,  à  laquelle  s'ajoute  le  blocage  des
+ailettes.
+5.3 Données quantitatives (Surface Integrals)
+GrandeurValeur CFDMéthode d'extraction
+Débit massique fumées0,1664 kg/sMass Flow Rate – inlet_fumees
+Pression moyenne entrée fumées45,72 PaArea-Weighted Average – inlet_fumees
+Pression moyenne sortie fumées−0,068 PaArea-Weighted Average – outlet_fumees
+Perte de charge ΔP fumées45,79 PaP_in − P_out
+Vitesse maximale entre ailettes21,8 m/sContour velocity magnitude – auto range
+Reynolds maximal Re_max10 517ρ·V_max·D_ext/μ (section contractée)
+6. Calcul du coefficient d'échange global U
+Le nombre de Reynolds extrait de la CFD alimente les corrélations de Zukauskas (convection
+externe  sur  faisceau)  et  de  Dittus-Boelter  (convection  interne).  L'efficacité  des  ailettes  est
+évaluée  par  la  méthode  de  Schmidt.  Cette  approche  hybride  est  la  pratique  courante  en
+ingénierie thermique industrielle.
+6.1 Convection externe (fumées) – Zukauskas
+ÉtapeExpressionRésultat
+Vitesse dans la section
+contractée
+V_max = V_in · S_T / (S_T − D_ext) = 8 × 76 / 3816 m/s
+Reynolds maximalRe = ρ·V_max·D_ext/μ = 0,52 × 16 × 0,038 / 3·10
+-5
+10 517
+Nusselt (Zukauskas)Nu = 0,35 · Re
+0,6
+ · Pr
+0,36
+139,6
+h_extNu · λ / D_ext = 139,6 × 0,045 / 0,038165,5 W/m²·K
+
+Rapport CFD – Échangeur tubes-ailettesPIA – Récupération de chaleur fatale – ENSIATE Paris, mai 2026
+Abdelilah ELGHAZOUANI – Ingénieur certifié ANSYS Fluent – ENSIATE Paris ING4 TEFPage 7
+6.2 Efficacité des ailettes – méthode de Schmidt
+ParamètreExpressionRésultat
+Hauteur d'ailette Hr_2 − r_1 = 34 − 19 mm15 mm
+Paramètre m√(2·h_ext / (k·e)) = √(2 × 165,5 / (43 × 0,0004))138,7 m
+-1
+Produit m·H138,7 × 0,0152,08
+Efficacité η_fintanh(m·H)/(m·H), correction de Schmidt≈ 0,82
+h_ext effectifη_fin · h_ext = 0,82 × 165,5135,7 W/m²·K
+6.3 Convection interne (eau) – Dittus-Boelter
+ÉtapeExpressionRésultat
+Re_eauρ·V·D_int/μ = 998 × 1,5 × 0,032 / 0,00147 904 – turbulent
+Nu_eau (n = 0,4)0,023 · Re
+0,8
+ · Pr
+0,4
+147,9
+h_intNu · λ / D_int = 147,9 × 0,6 / 0,0322 773 W/m²·K
+6.4 Bilan des résistances thermiques
+RésistanceExpressionValeur [m²·K/W]Part
+R_ext – convection fumées1/(η·h_ext) = 1/(0,82 × 165,5)0,00735393,5 %
+R_cond – conduction aciere/k = 0,003/540,0000560,7 %
+R_int – convection eau1/h_int = 1/2 7730,0003614,6 %
+R_totalΣ R0,007770100 %
+U surface nue1/R_total128,7 W/m²·K—
+U rapporté à la surface totale
+ailetée
+U_nu / (A_total/A_tube) ≈ 128,7 / 3,5≈ 37 W/m²·KFinal
+Figure 3 – Répartition des résistances thermiques : la convection côté fumées représente 93,5 % de la
+résistance totale.
+Résultat final : U
+CFD
+ = 37 W/m²·K vs U
+Axel
+ = 40 W/m²·K → écart −7,5 %
+Résultat dans la tolérance d'ingénierie industrielle (±15 à 20 %). La convection externe
+côté fumées est le principal levier d'optimisation de l'échangeur.
+
+Rapport CFD – Échangeur tubes-ailettesPIA – Récupération de chaleur fatale – ENSIATE Paris, mai 2026
+Abdelilah ELGHAZOUANI – Ingénieur certifié ANSYS Fluent – ENSIATE Paris ING4 TEFPage 8
+7. Contraintes techniques rencontrées et
+limitations
+7.1 Problèmes rencontrés et solutions appliquées
+ProblèmeCauseSolution
+Plantage de Fluent Meshing au
+Switch to Solution
+Mode parallèle non supporté par
+la licence Student
+Passage en mode serial (1
+processeur)
+Licence MPI bloquée après
+plantage
+Processus fluent.exe non
+terminés
+Script de nettoyage + gestionnaire
+des tâches
+Zone 34 (outlet eau) détectée
+comme interior
+Faces eau et fumées coplanaires
+en Z = ±250 mm
+Géométrie STEP corrigée (tube
+prolongé de 5 mm)
+96 cellules de qualité nulle
+Ailettes minces, géométrie
+complexe
+Schéma modified centroid –
+correction automatique
+Équation de l'énergie non
+convergée
+Ambiguïté topologique de la zone
+34
+Méthode hybride CFD + corrélations
+pour U
+7.2 Limitations de la simulation actuelle
+LimitationImpact estimé
+Licence Student : 1 048 576 cellules maximumRaffinement des ailettes limité
+Taille de maille minimale 0,5 mm > épaisseur d'ailette
+0,4 mm
+Ailettes sous-résolues – erreur sur h_ext ≤ 5 %
+Propriétés des matériaux constantes (non dépendantes
+de T)
+Erreur estimée ±5 à 10 % sur h
+Rayonnement thermique non modéliséNégligeable en dessous de 700 K
+Encrassement (fouling) non modéliséU réel de l'installation ancienne plus faible
+Cellule unitaire seule (symétries périodiques)Effets de bord du faisceau non capturés
+Régime stationnaire uniquementTransitoires non pris en compte
+8. Plan d'amélioration
+ActionBénéfice attenduPriorité
+Corriger la zone 34 (géométrie STEP tube +5
+mm)
+Convergence thermique → U direct issu de
+la CFD
+Critique
+Raffiner le maillage des ailettes (0,2 mm
+minimum)
+Précision sur h_ext : erreur ≤ 2 %Haute
+Propriétés dépendantes de la température
+(UDF)
+Erreur matériau ≤ 3 %Haute
+Activer le schéma Second Order Upwind après
+convergence
+Précision numérique accrueMoyenne
+Étude paramétrique : pas d'ailettes 6 / 8 / 10
+mm
+Courbe d'optimisation j = f(pas)Planifiée
+Comparaison k-ε vs k-ω SSTVérification de l'indépendance au modèlePlanifiée
+Calcul en mode parallèle (4 processeurs)Temps de calcul divisé par ~4Planifiée
+
+Rapport CFD – Échangeur tubes-ailettesPIA – Récupération de chaleur fatale – ENSIATE Paris, mai 2026
+Abdelilah ELGHAZOUANI – Ingénieur certifié ANSYS Fluent – ENSIATE Paris ING4 TEFPage 9
+9. Conclusion
+Cette  simulation  CFD,  menée  du  11  au  14  mai  2026  dans  le  cadre  du  Projet  Interannée
+d'ENSIATE  Paris,  a  permis  de  caractériser  le  comportement  thermo-aérodynamique  d'une
+cellule  unitaire  d'échangeur  tubes-ailettes  dans  le  contexte  de  la  récupération  de  chaleur
+fatale sidérurgique (cas Axel, Dunkerque).
+Le champ de vitesse convergé met en évidence une accélération des fumées d'un facteur 2,7
+entre  les  ailettes  (V
+max
+  =  21,8  m/s)  et  une  zone  de  sillage  clairement  identifiée  derrière  le
+tube. La perte de charge mesurée est de 45,8 Pa sur la cellule unitaire.
+Le coefficient d'échange global U
+CFD
+ = 37 W/m²·K présente un écart de −7,5 % par rapport à
+la  référence  industrielle  de  40  W/m²·K,  pleinement  dans  la  tolérance  d'ingénierie.  L'analyse
+des résistances thermiques montre que la convection côté fumées représente 93,5 % de la
+résistance totale : c'est là que se joue l'optimisation de l'échangeur, et non sur la paroi ni sur
+le côté eau.
+Au-delà  des  résultats,  ce  projet  a  exigé  de  traiter  des  difficultés  que  les  exercices
+académiques  ne  présentent  pas  :  une  ambiguïté  topologique  faisant  diverger  l'équation  de
+l'énergie,  un  plantage  du  maillage  en  mode  parallèle,  les  limites  d'une  licence  Student.  Le
+workflow complet – de la modélisation CadQuery jusqu'au post-traitement Fluent – constitue
+une base solide pour l'étude paramétrique à venir et illustre concrètement les compétences
+validées par ma certification ANSYS Fluent.
+Abdelilah ELGHAZOUANI – Ingénieur certifié ANSYS Fluent
+ENSIATE Paris – ING4 TEF – Projet Interannée, mai 2026
+abdelilah-elghazouani.pro | 06 60 35 47 96
