@@ -12,43 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initSmoothMobileMenu();
   initControlClock();
   initEnergyRail();
-  initThermalCursor();
 });
 
-/* ---------- Thermal cursor bloom (infrared heat under the pointer) ---------- */
-function initThermalCursor() {
-  const cursor = document.getElementById('thermal-cursor');
-  if (!cursor) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (window.matchMedia('(hover: none)').matches) return;
-
-  let x = window.innerWidth / 2;
-  let y = window.innerHeight / 2;
-  let tx = x, ty = y;
-  let raf = null;
-
-  const render = () => {
-    x += (tx - x) * 0.18;
-    y += (ty - y) * 0.18;
-    cursor.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
-    if (Math.abs(tx - x) > 0.5 || Math.abs(ty - y) > 0.5) {
-      raf = requestAnimationFrame(render);
-    } else {
-      raf = null;
-    }
-  };
-
-  window.addEventListener('pointermove', (e) => {
-    tx = e.clientX;
-    ty = e.clientY;
-    cursor.classList.add('is-live');
-    if (!raf) raf = requestAnimationFrame(render);
-  }, { passive: true });
-
-  window.addEventListener('pointerleave', () => cursor.classList.remove('is-live'));
-}
-
-/* ---------- Live control-room clock ---------- */
+/* ---------- Live drawing-reference clock ---------- */
 function initControlClock() {
   const clock = document.getElementById('cr-clock');
   if (!clock) return;

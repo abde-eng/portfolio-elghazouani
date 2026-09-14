@@ -31,21 +31,12 @@
   <!-- Scroll energy rail -->
   <div class="energy-rail" aria-hidden="true"><div class="energy-rail-fill" id="energy-rail-fill"></div></div>
 
-  <!-- Thermal cursor bloom (cinematic) -->
-  <div class="thermal-cursor" id="thermal-cursor" aria-hidden="true"></div>
-
-  <!-- Signature: fixed infrared temperature color scale -->
-  <div class="thermal-scale" aria-hidden="true">
-    <span class="thermal-scale__cap">°C · IR</span>
-    <div class="thermal-scale__bar"></div>
-    <div class="thermal-scale__ticks">
-      <span>673</span>
-      <span>500</span>
-      <span>340</span>
-      <span>180</span>
-      <span>20</span>
-    </div>
-  </div>
+  <!-- Signature: the whole page framed as a technical drawing sheet -->
+  <div class="sheet-frame" aria-hidden="true"></div>
+  <div class="sheet-cross sheet-cross--tl" aria-hidden="true"></div>
+  <div class="sheet-cross sheet-cross--tr" aria-hidden="true"></div>
+  <div class="sheet-cross sheet-cross--bl" aria-hidden="true"></div>
+  <div class="sheet-cross sheet-cross--br" aria-hidden="true"></div>
 
   <!-- ========== NAVBAR ========== -->
   <header class="header">
@@ -82,6 +73,7 @@
           <a href="#cv" class="cta cta-primary">Découvrir mon profil</a>
           <a href="#contact" class="cta cta-outline">Me contacter</a>
         </div>
+        <div class="dim-line" aria-hidden="true">ÉCH 1:1 · FEUILLE 01 · RÉV. A</div>
         <ul class="hero-facts" aria-label="Informations clés">
           <li><i class="fas fa-graduation-cap"></i> ENSIATE · Master Génie Thermique</li>
           <li><i class="fas fa-file-signature"></i> Rythme 2 sem. école / 3 sem. entreprise</li>
@@ -545,7 +537,37 @@
 
   <!-- ========== FOOTER ========== -->
   <footer>
-    © 2026 Abdelilah El Ghazouani – Portfolio
+    <div class="title-block">
+      <div class="title-block__cell title-block__cell--wide">
+        <div class="title-block__k">Projet / Drawing title</div>
+        <div class="title-block__v">Portfolio — Ingénieur Énergétique</div>
+      </div>
+      <div class="title-block__cell">
+        <div class="title-block__k">Dessiné par</div>
+        <div class="title-block__v">A. El Ghazouani</div>
+      </div>
+      <div class="title-block__cell">
+        <div class="title-block__k">Échelle</div>
+        <div class="title-block__v">1:1</div>
+      </div>
+      <div class="title-block__cell">
+        <div class="title-block__k">Date</div>
+        <div class="title-block__v">2026</div>
+      </div>
+      <div class="title-block__cell">
+        <div class="title-block__k">Feuille</div>
+        <div class="title-block__v">01 / 01</div>
+      </div>
+      <div class="title-block__cell">
+        <div class="title-block__k">Révision</div>
+        <div class="title-block__v">A</div>
+      </div>
+      <div class="title-block__cell">
+        <div class="title-block__k">Statut</div>
+        <div class="title-block__v">Disponible 09/2026</div>
+      </div>
+    </div>
+    <div class="footer-note">© 2026 Abdelilah El Ghazouani — Portfolio</div>
   </footer>
 
   <!-- ========== DOWNLOAD CV BUTTON ========== -->
