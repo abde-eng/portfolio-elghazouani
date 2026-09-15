@@ -2227,3 +2227,103 @@ body.home .hero-text h1 {
 @media (prefers-reduced-motion: reduce) {
   body.home .hero-text h1 { animation: none; clip-path: none; }
 }
+
+/* ============================================================
+   UX REFINEMENT LAYER — accessibility, feedback, rhythm
+   (engineering polish, scoped to the drafting sheet)
+   ============================================================ */
+
+/* Anchor navigation: smooth scroll + offset so section tops clear the fixed nav */
+html { scroll-behavior: smooth; }
+body.home #accueil,
+body.home #cv,
+body.home #projets,
+body.home #contact,
+body.home #simulation { scroll-margin-top: 92px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Drafting-red text selection */
+body.home ::selection { background: var(--bp-red); color: var(--bp-panel-2); }
+
+/* Consistent, visible keyboard focus — a red drafting outline on every interactive control */
+body.home a:focus-visible,
+body.home button:focus-visible,
+body.home input:focus-visible,
+body.home .cta:focus-visible,
+body.home .project-card:focus-visible,
+body.home .contact-card:focus-visible {
+  outline: 2px solid var(--bp-red);
+  outline-offset: 3px;
+  border-radius: 0;
+}
+body.home :focus:not(:focus-visible) { outline: none; }
+
+/* Unified easing + hover lift language across interactive cards */
+body.home .stat-card,
+body.home .timeline-item,
+body.home .project-card,
+body.home .contact-card,
+body.home .highlight-tag,
+body.home .skill-tag,
+body.home .cert-list li,
+body.home .cta {
+  transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.2, 1),
+              box-shadow 0.22s cubic-bezier(0.2, 0.7, 0.2, 1),
+              border-color 0.22s ease, background-color 0.22s ease, color 0.22s ease;
+  will-change: transform;
+}
+body.home .stat-card:hover,
+body.home .contact-card:hover { transform: translateY(-3px); }
+body.home .project-card:hover { transform: translate(-2px, -2px); }
+
+/* Nav link: animated red underline that draws in from the left */
+body.home .nav-links li a { position: relative; }
+body.home .nav-links li a::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -4px;
+  height: 1.5px;
+  width: 100%;
+  background: var(--bp-red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+body.home .nav-links li a:hover::after,
+body.home .nav-links li a.active::after { transform: scaleX(1); }
+
+/* Section index label: small red tick so it reads as a drawing callout */
+body.home .sec-index { display: inline-flex; align-items: center; gap: 0.5rem; }
+body.home .sec-index::before {
+  content: '';
+  width: 14px;
+  height: 1.5px;
+  background: var(--bp-red);
+}
+
+/* Typographic detail — tighter display tracking, more readable body measure */
+body.home .hero-text h1 { letter-spacing: -0.02em; text-wrap: balance; }
+body.home .section-header h2,
+body.home .section > h2 { letter-spacing: -0.01em; text-wrap: balance; }
+body.home .about-text p,
+body.home .timeline-item p,
+body.home .section-subtitle { max-width: 68ch; text-wrap: pretty; }
+
+/* CTA press feedback */
+body.home .cta:active { transform: translate(0, 1px); }
+
+/* Buttons and interactive cards signal affordance */
+body.home a, body.home button, body.home .cta,
+body.home label[for="menu-toggle"] { cursor: pointer; }
+
+/* Reduced motion: neutralize hover translation and transitions */
+@media (prefers-reduced-motion: reduce) {
+  body.home .stat-card,
+  body.home .timeline-item,
+  body.home .project-card,
+  body.home .contact-card,
+  body.home .cta { transition: none; }
+  body.home .stat-card:hover,
+  body.home .contact-card:hover,
+  body.home .project-card:hover { transform: none; }
+}
